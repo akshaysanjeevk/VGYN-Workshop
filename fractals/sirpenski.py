@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
+from matplotlib.collections import PolyCollection
 
 
 # ---------------------------------------------------
@@ -15,11 +15,11 @@ def subdivide(tri):
     m23 = (p2 + p3) / 2
     m31 = (p3 + p1) / 2
 
-    return [
-        np.array([p1,  m12, m31]),
-        np.array([m12, p2,  m23]),
-        np.array([m31, m23, p3 ])
-    ]
+    return np.array([
+        [p1,  m12, m31],
+        [m12, p2,  m23],
+        [m31, m23, p3 ]
+    ])
 
 
 # ---------------------------------------------------
@@ -36,7 +36,7 @@ def next_generation(triangles):
 
         new_triangles.extend(children)
 
-    return new_triangles
+    return np.array(new_triangles)
 
 
 # ---------------------------------------------------
@@ -49,13 +49,33 @@ initial_triangle = np.array([
     [0.5, np.sqrt(3)/2]
 ])
 
-generations = [[initial_triangle]]
+generations = [np.array([initial_triangle])]
 
 max_depth = 10
 depth = 0
 
-# Toggle for right-side panels
+
+# ---------------------------------------------------
+# Toggles
+# ---------------------------------------------------
+
 show_right_panel = False
+
+show_triangles = False
+show_area = False
+show_boundary = False
+show_side = False
+
+
+# ---------------------------------------------------
+# Precompute all generations
+# ---------------------------------------------------
+
+for _ in range(max_depth):
+
+    generations.append(
+        next_generation(generations[-1])
+    )
 
 
 # ---------------------------------------------------
@@ -64,16 +84,35 @@ show_right_panel = False
 
 fig = plt.figure(figsize=(8, 6))
 
-# Main fractal plot
 ax_fractal = fig.add_axes([0.05, 0.08, 0.90, 0.84])
 
-# Smaller side plots
-ax_area  = fig.add_axes([0.72, 0.60, 0.22, 0.22])
-ax_count = fig.add_axes([0.72, 0.22, 0.22, 0.22])
+ax_area  = fig.add_axes([0.72, 0.69, 0.22, 0.17])
 
+ax_count = fig.add_axes([0.72, 0.42, 0.22, 0.17])
+
+ax_perim = fig.add_axes([0.72, 0.15, 0.22, 0.17])
+
+
+# ---------------------------------------------------
 # Initially hidden
+# ---------------------------------------------------
+
 ax_area.set_visible(False)
 ax_count.set_visible(False)
+ax_perim.set_visible(False)
+
+
+# ---------------------------------------------------
+# Precompute theory curves
+# ---------------------------------------------------
+
+theory_depths = np.arange(max_depth + 1)
+
+theory_areas = (3/4)**theory_depths
+
+theory_counts = 3**theory_depths
+
+theory_perimeters = 3 * (3/2)**theory_depths
 
 
 # ---------------------------------------------------
@@ -84,204 +123,286 @@ def draw(depth):
 
     global show_right_panel
 
-    # -----------------------------------------------
-    # Clear axes
-    # -----------------------------------------------
-
     ax_fractal.clear()
+
     ax_area.clear()
     ax_count.clear()
+    ax_perim.clear()
 
     # -----------------------------------------------
-    # Resize fractal panel dynamically
+    # Resize layout
     # -----------------------------------------------
 
     if show_right_panel:
 
         ax_fractal.set_position([0.05, 0.08, 0.62, 0.84])
 
-        ax_area.set_visible(True)
-        ax_count.set_visible(True)
-
     else:
 
         ax_fractal.set_position([0.05, 0.08, 0.90, 0.84])
 
-        ax_area.set_visible(False)
-        ax_count.set_visible(False)
-
     # -----------------------------------------------
-    # Fractal axis setup
+    # Fractal setup
     # -----------------------------------------------
 
     ax_fractal.set_aspect('equal')
+
     ax_fractal.axis('off')
 
     triangles = generations[depth]
 
+    edge_color = 'black' if depth < 7 else 'none'
+
+    collection = PolyCollection(
+        triangles,
+        facecolors='red',
+        edgecolors=edge_color,
+        linewidths=0.2
+    )
+
+    ax_fractal.add_collection(collection)
+
+    ax_fractal.set_xlim(-0.05, 1.05)
+
+    ax_fractal.set_ylim(-0.05, 0.92)
+
     # -----------------------------------------------
-    # Draw triangles
+    # Quantities
     # -----------------------------------------------
 
-    for tri in triangles:
-
-        patch = Polygon(
-            tri,
-            edgecolor='black',
-            facecolor='red'
-        )
-
-        ax_fractal.add_patch(patch)
-
-    # -----------------------------------------------
-    # Information panel
-    # -----------------------------------------------
+    num_triangles = 3**depth
 
     area_fraction = (3/4)**depth
 
-    info = (
-        f"Depth: {depth}\n"
-        f"Triangles: {len(triangles)}\n"
-        f"Remaining Area: {area_fraction:.6f}\n\n"
-        f"W / D : Increase depth\n"
-        f"S / A : Decrease depth\n"
-        f"R     : Toggle info panel"
-    )
+    boundary_length = 3 * (3/2)**depth
+
+    side_length = (1/2)**depth
+
+    # -----------------------------------------------
+    # Information text
+    # -----------------------------------------------
+
+    info_lines = [f"Depth: {depth}", ""]
+
+    if show_triangles:
+
+        info_lines.append(
+            f"coloured triangles : {num_triangles}"
+        )
+
+    if show_area:
+
+        info_lines.append(
+            f"remaining area     : {area_fraction:.6f}"
+        )
+
+    if show_boundary:
+
+        info_lines.append(
+            f"boundary length    : {boundary_length:.6f}"
+        )
+
+    # if show_side:
+
+    #     info_lines.append(
+    #         f"triangle side      : {side_length:.6f}"
+    #     )
+
+    info_lines.extend([
+        "",
+        "z : toggle number of triangles",
+        "x : toggle shaded area",
+        "c : toggle boundary",
+        # "v : toggle side length",
+        "r : toggle graph panel"
+    ])
+
+    info = "\n".join(info_lines)
 
     ax_fractal.text(
         0.05,
-        0.80,
+        0.82,
         info,
-        fontsize=12,
+        fontsize=11,
         family='monospace',
         transform=ax_fractal.transAxes
     )
 
-    # -----------------------------------------------
-    # Draw right panel only if enabled
-    # -----------------------------------------------
+    # ------------------------------------------------
+    # Hide all plots first
+    # ------------------------------------------------
+
+    ax_area.set_visible(False)
+    ax_count.set_visible(False)
+    ax_perim.set_visible(False)
+
+    # ------------------------------------------------
+    # Graphs
+    # ------------------------------------------------
 
     if show_right_panel:
 
-        # -------------------------------------------
-        # Theoretical curves
-        # -------------------------------------------
-
-        theory_depths = np.arange(max_depth + 1)
-
-        theory_areas = (3/4)**theory_depths
-
-        theory_counts = 3**theory_depths
-
-        # -------------------------------------------
-        # Current explored values
-        # -------------------------------------------
-
         explored_depths = np.arange(depth + 1)
 
-        explored_areas = (3/4)**explored_depths
+        # --------------------------------------------
+        # Dynamic positioning
+        # --------------------------------------------
 
-        explored_counts = 3**explored_depths
+        visible_axes = []
 
-        # -------------------------------------------
-        # Area plot
-        # -------------------------------------------
+        if show_area:
 
-        ax_area.plot(
-            theory_depths,
-            theory_areas,
-            linewidth=1,
-            alpha=0.5,
-            color='grey'
-        )
+            visible_axes.append(ax_area)
 
-        ax_area.plot(
-            explored_depths,
-            explored_areas,
-            marker='o',
-            color='grey'
-        )
+        if show_triangles:
 
-        ax_area.scatter(
-            [depth],
-            [area_fraction],
-            s=80,
-            zorder=5,
-            color='red'
-        )
+            visible_axes.append(ax_count)
 
-        ax_area.set_title(
-            "Remaining Area",
-            family='monospace',
-            fontsize=11
-        )
+        if show_boundary:
 
-        ax_area.set_xlabel(
-            "Depth",
-            family='monospace',
-            fontsize=9
-        )
+            visible_axes.append(ax_perim)
 
-        ax_area.set_ylabel(
-            "Area",
-            family='monospace',
-            fontsize=9
-        )
+        n_visible = len(visible_axes)
 
-        ax_area.set_xlim(0, max_depth)
+        if n_visible > 0:
 
-        ax_area.set_ylim(0, 1.05)
+            top = 0.75
 
-        # -------------------------------------------
-        # Triangle count plot
-        # -------------------------------------------
+            height = 0.18
 
-        ax_count.plot(
-            theory_depths,
-            theory_counts,
-            linewidth=2,
-            alpha=0.5,
-            color='grey'
-        )
+            gap = 0.06
 
-        ax_count.plot(
-            explored_depths,
-            explored_counts,
-            marker='o',
-            color='grey'
-        )
+            for i, ax in enumerate(visible_axes):
 
-        ax_count.scatter(
-            [depth],
-            [3**depth],
-            s=80,
-            zorder=5,
-            color='red'
-        )
+                y = top - i * (height + gap)
 
-        ax_count.set_title(
-            "Solid Triangles",
-            fontsize=11,
-            family='monospace'
-        )
+                ax.set_position([0.72, y, 0.22, height])
 
-        ax_count.set_xlabel(
-            "Depth",
-            fontsize=9,
-            family='monospace'
-        )
+                ax.set_visible(True)
 
-        ax_count.set_ylabel(
-            "Count",
-            fontsize=9,
-            family='monospace'
-        )
+        # --------------------------------------------
+        # Area graph
+        # --------------------------------------------
 
-        ax_count.set_xlim(0, max_depth)
+        if show_area:
 
-        ax_count.set_yscale('log')
+            explored_areas = (3/4)**explored_depths
 
-    plt.draw()
+            ax_area.plot(
+                theory_depths,
+                theory_areas,
+                linewidth=1,
+                alpha=0.5,
+                color='grey'
+            )
+
+            ax_area.plot(
+                explored_depths,
+                explored_areas,
+                marker='o',
+                color='grey'
+            )
+
+            ax_area.scatter(
+                [depth],
+                [area_fraction],
+                s=80,
+                color='red'
+            )
+
+            ax_area.set_title(
+                "Remaining Area",
+                fontsize=10,
+                family='monospace'
+            )
+
+            ax_area.set_xlim(0, max_depth)
+
+            ax_area.set_ylim(0, 1.05)
+
+        # --------------------------------------------
+        # Triangle graph
+        # --------------------------------------------
+
+        if show_triangles:
+
+            explored_counts = 3**explored_depths
+
+            ax_count.plot(
+                theory_depths,
+                theory_counts,
+                linewidth=1.5,
+                alpha=0.5,
+                color='grey'
+            )
+
+            ax_count.plot(
+                explored_depths,
+                explored_counts,
+                marker='o',
+                color='grey'
+            )
+
+            ax_count.scatter(
+                [depth],
+                [num_triangles],
+                s=80,
+                color='red'
+            )
+
+            ax_count.set_title(
+                "Solid Triangles",
+                fontsize=10,
+                family='monospace'
+            )
+
+            ax_count.set_xlim(0, max_depth)
+
+            ax_count.set_yscale('log')
+
+        # --------------------------------------------
+        # Boundary graph
+        # --------------------------------------------
+
+        if show_boundary:
+
+            explored_perimeters = (
+                3 * (3/2)**explored_depths
+            )
+
+            ax_perim.plot(
+                theory_depths,
+                theory_perimeters,
+                linewidth=1.5,
+                alpha=0.5,
+                color='grey'
+            )
+
+            ax_perim.plot(
+                explored_depths,
+                explored_perimeters,
+                marker='o',
+                color='grey'
+            )
+
+            ax_perim.scatter(
+                [depth],
+                [boundary_length],
+                s=80,
+                color='red'
+            )
+
+            ax_perim.set_title(
+                "Boundary Length",
+                fontsize=10,
+                family='monospace'
+            )
+
+            ax_perim.set_xlim(0, max_depth)
+
+            ax_perim.set_yscale('log')
+
+    fig.canvas.draw_idle()
 
 
 # ---------------------------------------------------
@@ -291,8 +412,12 @@ def draw(depth):
 def on_key(event):
 
     global depth
-    global generations
     global show_right_panel
+
+    global show_triangles
+    global show_area
+    global show_boundary
+    global show_side
 
     # -----------------------------------------------
     # Increase depth
@@ -301,14 +426,6 @@ def on_key(event):
     if event.key in ['w', 'd']:
 
         if depth < max_depth:
-
-            if depth + 1 >= len(generations):
-
-                next_triangles = next_generation(
-                    generations[depth]
-                )
-
-                generations.append(next_triangles)
 
             depth += 1
 
@@ -327,12 +444,52 @@ def on_key(event):
             draw(depth)
 
     # -----------------------------------------------
-    # Toggle right panel
+    # Toggle graphs
     # -----------------------------------------------
 
     elif event.key == 'r':
 
         show_right_panel = not show_right_panel
+
+        draw(depth)
+
+    # -----------------------------------------------
+    # Toggle triangles
+    # -----------------------------------------------
+
+    elif event.key == 'z':
+
+        show_triangles = not show_triangles
+
+        draw(depth)
+
+    # -----------------------------------------------
+    # Toggle area
+    # -----------------------------------------------
+
+    elif event.key == 'x':
+
+        show_area = not show_area
+
+        draw(depth)
+
+    # -----------------------------------------------
+    # Toggle boundary
+    # -----------------------------------------------
+
+    elif event.key == 'c':
+
+        show_boundary = not show_boundary
+
+        draw(depth)
+
+    # -----------------------------------------------
+    # Toggle side length
+    # -----------------------------------------------
+
+    elif event.key == 'v':
+
+        show_side = not show_side
 
         draw(depth)
 
@@ -345,6 +502,7 @@ fig.canvas.mpl_connect(
     'key_press_event',
     on_key
 )
+
 
 # ---------------------------------------------------
 # Initial draw
