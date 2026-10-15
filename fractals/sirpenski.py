@@ -288,13 +288,13 @@ def draw(depth):
 
             explored_areas = (3/4)**explored_depths
 
-            ax_area.plot(
-                theory_depths,
-                theory_areas,
-                linewidth=1,
-                alpha=0.5,
-                color='grey'
-            )
+            # ax_area.plot(
+            #     theory_depths,
+            #     theory_areas,
+            #     linewidth=1,
+            #     alpha=0.5,
+            #     color='grey'
+            # )
 
             ax_area.plot(
                 explored_depths,
@@ -328,13 +328,13 @@ def draw(depth):
 
             explored_counts = 3**explored_depths
 
-            ax_count.plot(
-                theory_depths,
-                theory_counts,
-                linewidth=1.5,
-                alpha=0.5,
-                color='grey'
-            )
+            # ax_count.plot(
+            #     theory_depths,
+            #     theory_counts,
+            #     linewidth=1.5,
+            #     alpha=0.5,
+            #     color='grey'
+            # )
 
             ax_count.plot(
                 explored_depths,
@@ -358,7 +358,7 @@ def draw(depth):
 
             ax_count.set_xlim(0, max_depth)
 
-            ax_count.set_yscale('log')
+            # ax_count.set_yscale('log')
 
         # --------------------------------------------
         # Boundary graph
@@ -370,13 +370,13 @@ def draw(depth):
                 3 * (3/2)**explored_depths
             )
 
-            ax_perim.plot(
-                theory_depths,
-                theory_perimeters,
-                linewidth=1.5,
-                alpha=0.5,
-                color='grey'
-            )
+            # ax_perim.plot(
+            #     theory_depths,
+            #     theory_perimeters,
+            #     linewidth=1.5,
+            #     alpha=0.5,
+            #     color='grey'
+            # )
 
             ax_perim.plot(
                 explored_depths,
@@ -400,7 +400,7 @@ def draw(depth):
 
             ax_perim.set_xlim(0, max_depth)
 
-            ax_perim.set_yscale('log')
+            # ax_perim.set_yscale('log')
 
     fig.canvas.draw_idle()
 

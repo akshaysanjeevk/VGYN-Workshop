@@ -1,5 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1752477178.71518 "d:/IMSc Projects/VGYN-Workshop/Presentation/slide.tex" "slide.pdf" "slide" 1752477183.62539 0
+["pdflatex"] 1784107033.31568 "d:/IMSc Projects/VGYN-Workshop/Presentation/slide.tex" "slide.pdf" "slide" 1784107036.85284 0
   "C:/Program Files/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex7.tfm" 1233951848 1004 54797486969f23fa377b128694d548df ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex8.tfm" 1233951848 988 bdf658c3bfc2d96d3c8b02cfc1c94c20 ""
   "C:/Program Files/MiKTeX/fonts/tfm/public/amsfonts/cmextra/cmex9.tfm" 1234365220 996 a18840b13b499c08ac2de96a99eda4bc ""
@@ -224,16 +224,16 @@
   "C:/Users/aksha/AppData/Local/MiKTeX/fonts/map/pdftex/pdftex.map" 1742204534 80909 eab91d9745dd2edfd62a31d53cd5fe15 ""
   "C:/Users/aksha/AppData/Local/MiKTeX/miktex/data/le/pdftex/pdflatex.fmt" 1746020873 24215231 5e8f678890e55522b15251b94a9c5d9d ""
   "bigmap.png" 1752402465 250819 70adc37300841e07c52107303d0c517f ""
-  "d:/IMSc Projects/VGYN-Workshop/Presentation/slide.tex" 1752477174 13500 ab83abac4a18fb109ec8d4a81b817cf9 ""
+  "d:/IMSc Projects/VGYN-Workshop/Presentation/slide.tex" 1784107032 13500 ab83abac4a18fb109ec8d4a81b817cf9 ""
   "euler's map.png" 1752423986 180045 36ba24753d81155bdc479f16e5e66c4d ""
   "example2.png" 1752417606 353472 fcfb70aeeaba02f61e7c8522b05fd0ee ""
   "map1.png" 1752395632 679125 1da539163ea385f22e28be8b4204549b ""
   "map2.png" 1752399739 2353075 7ac37b77eb3101b353b8ac976cb1e816 ""
   "metromap_cropped.pdf" 1752425175 226720 84508d1d14996e1321111fbecd003eb6 ""
-  "slide.aux" 1752477183 2889 6af6affacfab0880dae131a1e144db71 "pdflatex"
-  "slide.nav" 1752477183 1952 50959ad2fb88cef93ecf2108118b978f "pdflatex"
-  "slide.out" 1752477180 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
-  "slide.tex" 1752477174 13500 ab83abac4a18fb109ec8d4a81b817cf9 ""
+  "slide.aux" 1784107036 2889 6af6affacfab0880dae131a1e144db71 "pdflatex"
+  "slide.nav" 1784107036 1952 50959ad2fb88cef93ecf2108118b978f "pdflatex"
+  "slide.out" 1784107034 0 d41d8cd98f00b204e9800998ecf8427e "pdflatex"
+  "slide.tex" 1784107032 13500 ab83abac4a18fb109ec8d4a81b817cf9 ""
   "zoom.png" 1752404131 547293 08775e0e811b68c0fe3e8051401aecc1 ""
   (generated)
   "slide.aux"
